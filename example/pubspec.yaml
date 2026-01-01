@@ -1,0 +1,24 @@
+name: json_dynamic_widget_for_shad_example
+description: Example app testing all shadcn_ui widget builders
+
+publish_to: none
+
+environment:
+  sdk: ^3.10.0
+  flutter: ">=3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  json_dynamic_widget: ^12.0.0+3
+  json_dynamic_widget_for_shad:
+    path: ..
+  shadcn_ui: any
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
