@@ -1,6 +1,6 @@
 name: json_dynamic_widget_for_shad
 description: "A json_dynamic_widget plugin for shadcn_ui Flutter components"
-version: 0.0.1
+version: 0.2.0
 homepage: https://github.com/Pathverse/json_dynamic_widget_for_shad
 
 environment:
