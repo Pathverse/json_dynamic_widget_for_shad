@@ -55,13 +55,14 @@ class ShadTableBuilder extends _ShadTableBuilder {
     final model = createModel(childBuilder: childBuilder, data: data);
 
     return _ShadTableWidget(
-      footer: model.footer,
-      header: model.header,
       key: key,
       onHoveredRowIndex: model.onHoveredRowIndex,
       pinnedColumnCount: model.pinnedColumnCount,
       pinnedRowCount: model.pinnedRowCount,
-      children: model.children,
+      rows: [
+        for (var d in model.rows)
+          d.build(childBuilder: childBuilder, context: context),
+      ],
     );
   }
 }
@@ -70,21 +71,17 @@ class JsonShadTableWidget extends JsonWidgetData {
   JsonShadTableWidget({
     Map<String, dynamic> args = const {},
     JsonWidgetRegistry? registry,
-    this.footer,
-    this.header,
     this.onHoveredRowIndex,
     this.pinnedColumnCount,
     this.pinnedRowCount,
-    required this.children,
+    required this.rows,
   }) : super(
          jsonWidgetArgs: ShadTableBuilderModel.fromDynamic(
            {
-             'footer': footer,
-             'header': header,
              'onHoveredRowIndex': onHoveredRowIndex,
              'pinnedColumnCount': pinnedColumnCount,
              'pinnedRowCount': pinnedRowCount,
-             'children': children,
+             'rows': rows,
 
              ...args,
            },
@@ -94,12 +91,10 @@ class JsonShadTableWidget extends JsonWidgetData {
          jsonWidgetBuilder: () => ShadTableBuilder(
            args: ShadTableBuilderModel.fromDynamic(
              {
-               'footer': footer,
-               'header': header,
                'onHoveredRowIndex': onHoveredRowIndex,
                'pinnedColumnCount': pinnedColumnCount,
                'pinnedRowCount': pinnedRowCount,
-               'children': children,
+               'rows': rows,
 
                ...args,
              },
@@ -110,33 +105,23 @@ class JsonShadTableWidget extends JsonWidgetData {
          jsonWidgetType: ShadTableBuilder.kType,
        );
 
-  final List<ShadTableCell>? footer;
-
-  final List<ShadTableCell>? header;
-
   final void Function(int?)? onHoveredRowIndex;
 
   final int? pinnedColumnCount;
 
   final int? pinnedRowCount;
 
-  final List<List<ShadTableCell>> children;
+  final List<JsonWidgetData> rows;
 }
 
 class ShadTableBuilderModel extends JsonWidgetBuilderModel {
   const ShadTableBuilderModel(
     super.args, {
-    this.footer,
-    this.header,
     this.onHoveredRowIndex,
     this.pinnedColumnCount,
     this.pinnedRowCount,
-    required this.children,
+    required this.rows,
   });
-
-  final List<ShadTableCell>? footer;
-
-  final List<ShadTableCell>? header;
 
   final void Function(int?)? onHoveredRowIndex;
 
@@ -144,7 +129,7 @@ class ShadTableBuilderModel extends JsonWidgetBuilderModel {
 
   final int? pinnedRowCount;
 
-  final List<List<ShadTableCell>> children;
+  final List<JsonWidgetData> rows;
 
   static ShadTableBuilderModel fromDynamic(
     dynamic map, {
@@ -181,8 +166,6 @@ class ShadTableBuilderModel extends JsonWidgetBuilderModel {
         map = registry.processArgs(map, <String>{}).value;
         result = ShadTableBuilderModel(
           args,
-          footer: map['footer'],
-          header: map['header'],
           onHoveredRowIndex: map['onHoveredRowIndex'],
           pinnedColumnCount: () {
             dynamic parsed = JsonClass.maybeParseInt(map['pinnedColumnCount']);
@@ -194,7 +177,19 @@ class ShadTableBuilderModel extends JsonWidgetBuilderModel {
 
             return parsed;
           }(),
-          children: map['children'],
+          rows: () {
+            dynamic parsed = JsonWidgetData.fromDynamicList(
+              map['rows'],
+              registry: registry,
+            );
+
+            if (parsed == null) {
+              throw Exception(
+                'Null value encountered for required parameter: [rows].',
+              );
+            }
+            return parsed;
+          }(),
         );
       }
     }
@@ -205,12 +200,10 @@ class ShadTableBuilderModel extends JsonWidgetBuilderModel {
   @override
   Map<String, dynamic> toJson() {
     return JsonClass.removeNull({
-      'footer': footer,
-      'header': header,
       'onHoveredRowIndex': onHoveredRowIndex,
       'pinnedColumnCount': pinnedColumnCount,
       'pinnedRowCount': pinnedRowCount,
-      'children': children,
+      'rows': JsonClass.toJsonList(rows),
 
       ...args,
     });
@@ -228,12 +221,10 @@ class ShadTableWidgetSchema {
     'type': 'object',
     'additionalProperties': false,
     'properties': {
-      'footer': SchemaHelper.anySchema,
-      'header': SchemaHelper.anySchema,
       'onHoveredRowIndex': SchemaHelper.anySchema,
       'pinnedColumnCount': SchemaHelper.numberSchema,
       'pinnedRowCount': SchemaHelper.numberSchema,
-      'children': SchemaHelper.anySchema,
+      'rows': SchemaHelper.arraySchema(JsonWidgetDataSchema.id),
     },
   };
 }

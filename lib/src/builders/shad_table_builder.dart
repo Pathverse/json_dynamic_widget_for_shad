@@ -1,12 +1,14 @@
 import 'package:json_dynamic_widget/json_dynamic_widget.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+import 'shad_table_row_builder.dart';
+
 part 'shad_table_builder.g.dart';
 
 /// Builder for [ShadTable] widget using the `.list` constructor.
 /// 
-/// For dynamic/lazy loading tables, extend this with custom builders.
-/// This builder supports explicit cell arrays for simpler JSON serialization.
+/// Uses shad_table_row to group cells into rows. Each row contains
+/// shad_table_cell widgets that are converted to ShadTableCell.
 /// 
 /// JSON Schema:
 /// ```json
@@ -14,11 +16,15 @@ part 'shad_table_builder.g.dart';
 ///   "type": "shad_table",
 ///   "args": {
 ///     "pinnedRowCount": 1,
-///     "pinnedColumnCount": 1
+///     "pinnedColumnCount": 0
 ///   },
 ///   "children": [
-///     [{ "type": "shad_table_cell", ... }, { "type": "shad_table_cell", ... }],
-///     [{ "type": "shad_table_cell", ... }, { "type": "shad_table_cell", ... }]
+///     { "type": "shad_table_row", "children": [
+///       { "type": "shad_table_cell", "args": {"isHeader": true}, "child": {...} }
+///     ]},
+///     { "type": "shad_table_row", "children": [
+///       { "type": "shad_table_cell", "child": {...} }
+///     ]}
 ///   ]
 /// }
 /// ```
@@ -36,33 +42,41 @@ abstract class _ShadTableBuilder extends JsonWidgetBuilder {
 }
 
 /// Wrapper widget for [ShadTable.list].
+/// Takes `List<Widget>` rows and converts them to `List<List<ShadTableCell>>`.
 class _ShadTableWidget extends StatelessWidget {
   const _ShadTableWidget({
-    required this.children,
-    this.header,
-    this.footer,
+    required this.rows,
     this.pinnedRowCount,
     this.pinnedColumnCount,
     this.onHoveredRowIndex,
     super.key,
   });
 
-  final List<List<ShadTableCell>> children;
-  final List<ShadTableCell>? header;
-  final List<ShadTableCell>? footer;
+  final List<Widget> rows;
   final int? pinnedRowCount;
   final int? pinnedColumnCount;
   final ValueChanged<int?>? onHoveredRowIndex;
 
   @override
   Widget build(BuildContext context) {
+    // Convert row widgets to List<List<ShadTableCell>>
+    final tableRows = <List<ShadTableCell>>[];
+    for (final row in rows) {
+      if (row is ShadTableRowWidget) {
+        tableRows.add(row.toTableCells());
+      }
+      // Skip non-row widgets
+    }
+    
+    if (tableRows.isEmpty) {
+      return const SizedBox.shrink();
+    }
+    
     return ShadTable.list(
-      header: header,
-      footer: footer,
       pinnedRowCount: pinnedRowCount,
       pinnedColumnCount: pinnedColumnCount,
       onHoveredRowIndex: onHoveredRowIndex,
-      children: children,
+      children: tableRows,
     );
   }
 }

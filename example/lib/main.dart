@@ -10,21 +10,27 @@ import 'pages/button_example.dart';
 import 'pages/calendar_example.dart';
 import 'pages/card_example.dart';
 import 'pages/checkbox_example.dart';
+import 'pages/context_menu_example.dart';
 import 'pages/date_picker_example.dart';
 import 'pages/dialog_example.dart';
 import 'pages/icon_button_example.dart';
 import 'pages/input_example.dart';
 import 'pages/input_otp_example.dart';
+import 'pages/menubar_example.dart';
 import 'pages/popover_example.dart';
 import 'pages/progress_example.dart';
 import 'pages/radio_example.dart';
+import 'pages/resizable_example.dart';
 import 'pages/select_example.dart';
 import 'pages/separator_example.dart';
+import 'pages/sheet_example.dart';
 import 'pages/slider_example.dart';
 import 'pages/switch_example.dart';
+import 'pages/table_example.dart';
 import 'pages/tabs_example.dart';
 import 'pages/textarea_example.dart';
 import 'pages/time_picker_example.dart';
+import 'pages/toast_example.dart';
 import 'pages/tooltip_example.dart';
 
 void main() {
@@ -84,12 +90,16 @@ class ExampleHome extends StatelessWidget {
             _ExampleItem('Tooltip', const TooltipExamplePage()),
             _ExampleItem('Popover', const PopoverExamplePage()),
             _ExampleItem('Dialog', const DialogExamplePage()),
+            _ExampleItem('Sheet', const SheetExamplePage()),
+            _ExampleItem('Toast', const ToastExamplePage()),
+            _ExampleItem('Context Menu', const ContextMenuExamplePage()),
           ]),
           const SizedBox(height: 24),
           _buildSection(context, 'Navigation Widgets', [
             _ExampleItem('Tabs', const TabsExamplePage()),
             _ExampleItem('Accordion', const AccordionExamplePage()),
             _ExampleItem('Breadcrumb', const BreadcrumbExamplePage()),
+            _ExampleItem('Menubar', const MenubarExamplePage()),
           ]),
           const SizedBox(height: 24),
           _buildSection(context, 'Data Widgets', [
@@ -97,6 +107,11 @@ class ExampleHome extends StatelessWidget {
             _ExampleItem('Calendar', const CalendarExamplePage()),
             _ExampleItem('Date Picker', const DatePickerExamplePage()),
             _ExampleItem('Time Picker', const TimePickerExamplePage()),
+            _ExampleItem('Table', const TableExamplePage()),
+          ]),
+          const SizedBox(height: 24),
+          _buildSection(context, 'Layout Widgets', [
+            _ExampleItem('Resizable', const ResizableExamplePage()),
           ]),
         ],
       ),

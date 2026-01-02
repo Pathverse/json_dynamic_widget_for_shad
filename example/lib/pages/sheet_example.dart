@@ -3,43 +3,48 @@ import 'package:json_dynamic_widget/json_dynamic_widget.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import '../widgets/json_editor_preview.dart';
 
-class DialogExamplePage extends StatelessWidget {
-  const DialogExamplePage({super.key});
+class SheetExamplePage extends StatelessWidget {
+  const SheetExamplePage({super.key});
 
-  static const routeName = '/dialog';
+  static const routeName = '/sheet';
 
   @override
   Widget build(BuildContext context) {
     return JsonEditorPreview(
-      title: 'ShadDialog',
-      description: 'Modal dialog component. Edit JSON then click "Show Dialog" button.',
+      title: 'ShadSheet',
+      description: 'Sheet slides from screen edges. Edit JSON then click "Show Sheet" button.',
       showOverlayButton: true,
       skipPreviewRender: true,
-      overlayButtonText: 'Show Dialog',
+      overlayButtonText: 'Show Sheet',
       onShowOverlay: (builtWidget, jsonData, registry) {
-        // Extract or wrap in dialog
-        final dialog = builtWidget is ShadDialog
-            ? builtWidget
-            : ShadDialog(
-                title: const Text('Dialog'),
-                child: builtWidget,
+        // Extract the ShadSheet widget or build it from JSON
+        Widget sheetContent = builtWidget;
+        
+        // If it's a ShadSheet, use it directly. Otherwise wrap content.
+        final sheet = sheetContent is ShadSheet
+            ? sheetContent
+            : ShadSheet(
+                title: const Text('Sheet'),
+                child: sheetContent,
               );
         
-        showShadDialog(
+        showShadSheet(
+          side: ShadSheetSide.bottom,
           context: context,
-          builder: (context) => dialog,
+          builder: (context) => sheet,
         );
       },
       initialJson: const {
-        'type': 'shad_dialog',
+        'type': 'shad_sheet',
         'args': {
+          'side': 'bottom',
           'title': {
             'type': 'text',
-            'args': {'text': 'Dialog Title'},
+            'args': {'text': 'Sheet Title'},
           },
           'description': {
             'type': 'text',
-            'args': {'text': 'Edit JSON and click Show Dialog'},
+            'args': {'text': 'Edit the JSON and click Show Sheet'},
           },
           'child': {
             'type': 'column',
@@ -50,7 +55,7 @@ class DialogExamplePage extends StatelessWidget {
             'children': [
               {
                 'type': 'text',
-                'args': {'text': 'Dialog content from JSON'},
+                'args': {'text': 'Sheet content from JSON'},
               },
               {
                 'type': 'sized_box',
@@ -58,7 +63,7 @@ class DialogExamplePage extends StatelessWidget {
               },
               {
                 'type': 'text',
-                'args': {'text': 'Customize this in the editor!'},
+                'args': {'text': 'You can edit this in the JSON editor!'},
               },
             ],
           },

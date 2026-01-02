@@ -74,5 +74,7 @@ export 'src/builders/shad_calendar_builder.dart';
 export 'src/builders/shad_date_picker_builder.dart';
 export 'src/builders/shad_time_picker_builder.dart';
 export 'src/builders/shad_table_builder.dart';
+export 'src/builders/shad_table_row_builder.dart';
+export 'src/builders/shad_table_cell_builder.dart';
 export 'src/builders/shad_resizable_builder.dart';
 

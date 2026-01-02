@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
 import 'package:json_dynamic_widget/json_dynamic_widget.dart';
 import 'package:json_dynamic_widget_for_shad/json_dynamic_widget_for_shad.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -11,12 +10,21 @@ class JsonEditorPreview extends StatefulWidget {
   final Map<String, dynamic> initialJson;
   final String title;
   final String? description;
+  final bool showOverlayButton;
+  final String? overlayButtonText;
+  final void Function(Widget builtWidget, JsonWidgetData data, JsonWidgetRegistry registry)? onShowOverlay;
+  /// If true, skip rendering the widget in preview (for overlay widgets like Sheet, Dialog, Toast)
+  final bool skipPreviewRender;
 
   const JsonEditorPreview({
     super.key,
     required this.initialJson,
     this.title = 'JSON Widget Preview',
     this.description,
+    this.showOverlayButton = false,
+    this.overlayButtonText,
+    this.onShowOverlay,
+    this.skipPreviewRender = false,
   });
 
   @override
@@ -115,6 +123,44 @@ class _JsonEditorPreviewState extends State<JsonEditorPreview> {
         child: Builder(
           builder: (themedContext) {
             try {
+              // For overlay widgets, don't build - just show the button
+              if (widget.skipPreviewRender) {
+                return Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.blue, width: 2),
+                    color: Colors.grey.shade900,
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(32),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        ElevatedButton.icon(
+                          onPressed: () {
+                            // Build the widget only when button is pressed
+                            final builtWidget = data.build(context: themedContext);
+                            widget.onShowOverlay?.call(builtWidget, data, _registry);
+                          },
+                          icon: const Icon(Icons.open_in_new),
+                          label: Text(widget.overlayButtonText ?? 'Show Overlay'),
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                            backgroundColor: Colors.blue,
+                            foregroundColor: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        const Text(
+                          'This widget requires overlay display.\nClick the button above to show it.',
+                          style: TextStyle(color: Colors.grey, fontSize: 14),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }
+              
               // Build widget inside themed context
               final builtWidget = data.build(context: themedContext);
               debugPrint('Widget built successfully: ${builtWidget.runtimeType}');

@@ -64,7 +64,10 @@ class ShadResizableBuilder extends _ShadResizableBuilder {
       key: key,
       resetOnDoubleTap: model.resetOnDoubleTap,
       showHandle: model.showHandle,
-      children: model.children,
+      children: [
+        for (var d in model.children)
+          d.build(childBuilder: childBuilder, context: context),
+      ],
     );
   }
 }
@@ -128,7 +131,7 @@ class JsonShadResizableWidget extends JsonWidgetData {
 
   final bool? showHandle;
 
-  final List<ShadResizablePanel> children;
+  final List<JsonWidgetData> children;
 }
 
 class ShadResizableBuilderModel extends JsonWidgetBuilderModel {
@@ -155,7 +158,7 @@ class ShadResizableBuilderModel extends JsonWidgetBuilderModel {
 
   final bool? showHandle;
 
-  final List<ShadResizablePanel> children;
+  final List<JsonWidgetData> children;
 
   static ShadResizableBuilderModel fromDynamic(
     dynamic map, {
@@ -215,7 +218,19 @@ class ShadResizableBuilderModel extends JsonWidgetBuilderModel {
           }(),
           resetOnDoubleTap: JsonClass.maybeParseBool(map['resetOnDoubleTap']),
           showHandle: JsonClass.maybeParseBool(map['showHandle']),
-          children: map['children'],
+          children: () {
+            dynamic parsed = JsonWidgetData.fromDynamicList(
+              map['children'],
+              registry: registry,
+            );
+
+            if (parsed == null) {
+              throw Exception(
+                'Null value encountered for required parameter: [children].',
+              );
+            }
+            return parsed;
+          }(),
         );
       }
     }
@@ -234,7 +249,7 @@ class ShadResizableBuilderModel extends JsonWidgetBuilderModel {
       'handleSize': handleSize,
       'resetOnDoubleTap': resetOnDoubleTap,
       'showHandle': showHandle,
-      'children': children,
+      'children': JsonClass.toJsonList(children),
 
       ...args,
     });
@@ -258,7 +273,7 @@ class ShadResizableWidgetSchema {
       'handleSize': SchemaHelper.numberSchema,
       'resetOnDoubleTap': SchemaHelper.boolSchema,
       'showHandle': SchemaHelper.boolSchema,
-      'children': SchemaHelper.anySchema,
+      'children': SchemaHelper.arraySchema(JsonWidgetDataSchema.id),
     },
   };
 }

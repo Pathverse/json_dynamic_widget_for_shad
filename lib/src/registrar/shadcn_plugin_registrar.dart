@@ -172,6 +172,14 @@ class JsonShadcnPluginRegistrar {
       const JsonWidgetBuilderContainer(builder: ShadTableBuilder.fromDynamic),
     );
     registry.registerCustomBuilder(
+      ShadTableRowBuilder.kType,
+      const JsonWidgetBuilderContainer(builder: ShadTableRowBuilder.fromDynamic),
+    );
+    registry.registerCustomBuilder(
+      ShadTableCellBuilder.kType,
+      const JsonWidgetBuilderContainer(builder: ShadTableCellBuilder.fromDynamic),
+    );
+    registry.registerCustomBuilder(
       ShadResizableBuilder.kType,
       const JsonWidgetBuilderContainer(builder: ShadResizableBuilder.fromDynamic),
     );

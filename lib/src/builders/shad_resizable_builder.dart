@@ -42,6 +42,7 @@ abstract class _ShadResizableBuilder extends JsonWidgetBuilder {
 }
 
 /// Wrapper widget for [ShadResizablePanelGroup].
+/// Takes `List<Widget>` children and wraps each in ShadResizablePanel.
 class _ShadResizableWidget extends StatelessWidget {
   const _ShadResizableWidget({
     required this.children,
@@ -54,7 +55,7 @@ class _ShadResizableWidget extends StatelessWidget {
     super.key,
   });
 
-  final List<ShadResizablePanel> children;
+  final List<Widget> children;
   final Axis axis;
   final bool? resetOnDoubleTap;
   final bool? showHandle;
@@ -64,6 +65,21 @@ class _ShadResizableWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Convert child widgets to ShadResizablePanel if needed
+    final panels = children.asMap().entries.map((entry) {
+      final index = entry.key;
+      final child = entry.value;
+      if (child is ShadResizablePanel) {
+        return child;
+      }
+      // Wrap non-panel widgets in a default panel
+      return ShadResizablePanel(
+        id: index, // Required ID
+        defaultSize: 1.0 / children.length, // Equal distribution
+        child: child,
+      );
+    }).toList();
+    
     return ShadResizablePanelGroup(
       axis: axis,
       resetOnDoubleTap: resetOnDoubleTap,
@@ -71,7 +87,7 @@ class _ShadResizableWidget extends StatelessWidget {
       handleSize: handleSize,
       dividerThickness: dividerThickness,
       dividerColor: dividerColor,
-      children: children,
+      children: panels,
     );
   }
 }

@@ -6,10 +6,11 @@ This package allows you to render shadcn_ui widgets from JSON definitions, enabl
 
 ## Features
 
-- 27 widget builders covering all major shadcn_ui components
+- 37+ widget builders covering all major shadcn_ui components
 - Full JSON serialization/deserialization support
 - Compatible with json_dynamic_widget's registry system
 - Type-safe argument handling with custom decoders/encoders
+- Wrapper pattern for compound widgets (no manual .g.dart edits needed)
 
 ## Installation
 
@@ -89,20 +90,20 @@ final widget = data.build(context: context);
 | **Overlay** ||||
 | ShadDialog | `shad_dialog` | ✅ | title, description, child |
 | ShadPopover | `shad_popover_widget` | ✅ | child, popover |
-| ShadSheet | `shad_sheet` | ⚠️ | Builder exists |
-| ShadToast | `shad_toast` | ⚠️ | Builder exists |
+| ShadSheet | `shad_sheet` | ✅ | Use showShadSheet() |
+| ShadToast | `shad_toast` | ✅ | Use ShadToaster.show() |
 | ShadTooltip | `shad_tooltip_widget` | ✅ | child, message |
 | **Navigation** ||||
-| ShadMenubar | `shad_menubar` | ⚠️ | Builder exists |
+| ShadMenubar | `shad_menubar_widget` | ✅ | Uses items property |
 | ShadTabs | `shad_tabs_widget` | ✅ | Requires `value` property |
 | **Data** ||||
 | ShadCalendar | `shad_calendar` | ✅ | selected, onChanged |
 | ShadDatePicker | `shad_date_picker` | ✅ | selected |
 | ShadProgress | `shad_progress` | ✅ | value (0.0-1.0) |
-| ShadResizable | `shad_resizable_widget` | ⚠️ | Builder exists |
-| ShadTable | `shad_table_widget` | ⚠️ | Builder exists |
+| ShadResizable | `shad_resizable_widget` | ✅ | Auto-wraps children in panels |
+| ShadTable | `shad_table_widget` | ✅ | Uses row/cell wrappers, needs bounded height |
 | ShadTimePicker | `shad_time_picker` | ✅ | Time selection |
-| ShadContextMenu | `shad_context_menu_widget` | ⚠️ | Builder exists |
+| ShadContextMenu | `shad_context_menu_widget` | ✅ | Right-click/long-press menu |
 
 ### Child/Helper Builders
 
@@ -114,8 +115,10 @@ final widget = data.build(context: context);
 | ShadOption | `shad_option` | ShadSelect |
 | ShadInputOTPGroup | `shad_input_o_t_p_group` | ShadInputOTP |
 | ShadInputOTPSlot | `shad_input_o_t_p_slot` | ShadInputOTP |
+| ShadTableRow | `shad_table_row_widget` | ShadTable |
+| ShadTableCell | `shad_table_cell_widget` | ShadTableRow |
 
-> ✅ = Working with example | ⚠️ = Builder exists, example pending
+> ✅ = Working with example
 
 ## JSON Schema Examples
 
@@ -196,13 +199,42 @@ final widget = data.build(context: context);
 The `example/` directory contains a full demo app with:
 - Interactive JSON editor for each widget
 - Live preview of rendered widgets
-- All 27 widget examples organized by category
+- All 33 widget examples organized by category
 
 Run the example:
 
 ```bash
 cd example
-flutter run
+flutter run -d chrome
+```
+
+## Important Notes
+
+### Overlay Widgets (Sheet, Dialog, Toast)
+These widgets require imperative show functions and cannot be built directly in the widget tree:
+```dart
+// Build the widget from JSON
+final widget = data.build(context: context);
+
+// Then show it imperatively
+showShadSheet(context: context, builder: (ctx) => widget);
+showShadDialog(context: context, builder: (ctx) => widget);
+ShadToaster.of(context).show(widget as ShadToast);
+```
+
+### Table Widget
+ShadTable requires bounded height constraints:
+```json
+{
+  "type": "sized_box",
+  "args": {
+    "height": 300,
+    "child": {
+      "type": "shad_table_widget",
+      "args": { ... }
+    }
+  }
+}
 ```
 
 ## Development
