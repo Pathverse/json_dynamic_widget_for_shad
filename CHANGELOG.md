@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.2.1
+- widen shadcn version constraints
+
 ## 0.2.0
 - Fixed ShadTable, ShadMenubar, ShadResizable with wrapper pattern
 - Added ShadTableRowBuilder and ShadTableCellBuilder
