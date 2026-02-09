@@ -13,7 +13,7 @@ dependencies:
   flutter_animate: ^4.5.2
   json_dynamic_widget: ^12.0.0+3
   json_theme: ^11.0.0
-  shadcn_ui: ^0.43.0
+  shadcn_ui: '>=0.43.0 <1.0.0'
 
 dev_dependencies:
   flutter_test:
